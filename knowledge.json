@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "version": 1,
+  "version": 2,
   "entries": [
     {
       "id": "ekf_dcm_fallback",
@@ -67,6 +67,312 @@
       "detail": "{items}",
       "advice": "Ці перевірки не дали б злетіти, поки їх не виправлено. Деякі вказують на проблеми налаштування (наприклад, поле компаса).",
       "mark_time": false
+    },
+    {
+      "id": "log_end_link_lost",
+      "type": "advice",
+      "for": "log_end.link_lost",
+      "text": "Це кінець радіозв'язку, а не обов'язково падіння. Що було далі, покаже лог .bin з SD-карти."
+    },
+    {
+      "id": "log_end_in_air",
+      "type": "advice",
+      "for": "log_end.in_air",
+      "text": "Так буває при втраті живлення контролера, ударі або від'єднанні батареї в польоті. Подивіться Vcc, батарею і вібрації в останні секунди."
+    },
+    {
+      "id": "log_end_on_ground",
+      "type": "advice",
+      "for": "log_end.on_ground",
+      "text": "Літак на землі, але не був disarmed: можливо, батарею від'єднали одразу після посадки."
+    },
+    {
+      "id": "air_disarm_rc_glitch_channel5",
+      "type": "advice",
+      "for": "air_disarm.rc_glitch",
+      "order": 10,
+      "text": "Перенесіть ARM/DISARM на канал 5: ELRS шле його в кожному пакеті. Перевірте приймач, антени і Switch Mode."
+    },
+    {
+      "id": "air_disarm_switch_move",
+      "type": "advice",
+      "for": "air_disarm.switch",
+      "order": 10,
+      "text": "Перенесіть ARM/DISARM на тумблер, який не зачепити випадково, або на канал 5."
+    },
+    {
+      "id": "air_disarm_rearm",
+      "type": "advice",
+      "for": [
+        "air_disarm.crash",
+        "air_disarm.gcs",
+        "air_disarm.switch",
+        "air_disarm.rc_glitch",
+        "air_disarm.method",
+        "air_disarm.unknown"
+      ],
+      "order": 90,
+      "text": "Arm у повітрі: газ на мінімум, стіки по центру."
+    },
+    {
+      "id": "touchdown_tlog",
+      "type": "advice",
+      "for": "touchdown.tlog",
+      "text": "Силу удару покаже лог .bin з SD-карти."
+    },
+    {
+      "id": "touchdown_inspect",
+      "type": "advice",
+      "for": [
+        "touchdown.crash",
+        "touchdown.hard"
+      ],
+      "text": "Удар такої сили може зрушити кріплення контролера і сенсорів. Огляньте літак."
+    },
+    {
+      "id": "failsafe_long",
+      "type": "advice",
+      "for": "failsafe.long",
+      "text": "Перевірте приймач, антени і налаштування failsafe."
+    },
+    {
+      "id": "failsafe_short",
+      "type": "advice",
+      "for": "failsafe.short",
+      "text": "Перевірте приймач, антени і THR_FS_VALUE: короткі спрацювання дає шум на каналі газу або збої кадрів RC."
+    },
+    {
+      "id": "rc_glitches_receiver",
+      "type": "advice",
+      "for": "rc_glitches.found",
+      "order": 10,
+      "text": "Перевірте приймач, антени, його живлення і Switch Mode ELRS."
+    },
+    {
+      "id": "rc_glitches_arm_channel5",
+      "type": "advice",
+      "for": "rc_glitches.found",
+      "if": [
+        {
+          "fact": "arm_switch",
+          "op": "==",
+          "value": 1
+        }
+      ],
+      "order": 20,
+      "text": "Arm/disarm перенесіть на канал 5."
+    },
+    {
+      "id": "vibration_high",
+      "type": "advice",
+      "for": "vibration.high",
+      "text": "Перевірте балансування гвинта, кріплення мотора і вібророзв'язку контролера."
+    },
+    {
+      "id": "vibration_clip",
+      "type": "advice",
+      "for": "vibration.clip",
+      "text": "Навіть поодинокі зашкалювання псують оцінку положення."
+    },
+    {
+      "id": "power_vcc_low",
+      "type": "advice",
+      "for": "power.vcc_low",
+      "text": "Нижче 4.5 В контролер може перезавантажитись. Живіть його від окремого BEC 5.3 В, перевірте роз'єм."
+    },
+    {
+      "id": "power_vcc_unstable",
+      "type": "advice",
+      "for": "power.vcc_unstable",
+      "text": "Перевірте BEC і модуль живлення під навантаженням."
+    },
+    {
+      "id": "power_flags",
+      "type": "advice",
+      "for": "power.flags",
+      "text": "Зміна прапорців означає перемикання джерела живлення або перевантаження USB/серворейки."
+    },
+    {
+      "id": "battery_deep_discharge",
+      "type": "advice",
+      "for": "battery.deep_discharge",
+      "text": "Нижче 3.0 В на банку батарея втрачає тягу і псується."
+    },
+    {
+      "id": "battery_sag",
+      "type": "advice",
+      "for": "battery.sag",
+      "text": "Скоротіть політ або візьміть батарею з більшою ємністю."
+    },
+    {
+      "id": "battery_no_current",
+      "type": "advice",
+      "for": "battery.no_current",
+      "text": "Без струму автопілот не знає витрачених мА·год і не може попередити про розряд за ємністю."
+    },
+    {
+      "id": "battery_fs_off",
+      "type": "advice",
+      "for": "battery.fs_off",
+      "text": "Для {cells}S варто поставити BATT_LOW_VOLT ≈ {volt_3v5:.1f} і BATT_FS_LOW_ACT = 1 (RTL)."
+    },
+    {
+      "id": "gps_switched_off",
+      "type": "advice",
+      "for": "gps.switched_off",
+      "text": "Втрату фіксу в ці періоди аналізатор не вважає проблемою."
+    },
+    {
+      "id": "gps_fix_lost",
+      "type": "advice",
+      "for": "gps.fix_lost",
+      "text": "Перевірте розташування антени GPS і завади від відеопередавача."
+    },
+    {
+      "id": "gps_jumps",
+      "type": "advice",
+      "for": "gps.jumps",
+      "text": "Це ознака glitch або глушіння GPS."
+    },
+    {
+      "id": "gps_frozen",
+      "type": "advice",
+      "for": "gps.frozen",
+      "text": "Справжній приймач так не працює: схоже на емульоване або підмішане джерело позиції. Якість фіксу за цими полями оцінити не можна."
+    },
+    {
+      "id": "ekf_innovation",
+      "type": "advice",
+      "for": "ekf.innovation",
+      "text": "Інновація понад 1 означає, що EKF не довіряє сенсору. Шукайте причину в цьому сенсорі."
+    },
+    {
+      "id": "ekf_lane_switch",
+      "type": "advice",
+      "for": "ekf.lane_switch",
+      "text": "Ядра EKF не узгоджені: перевірте IMU і вібрації."
+    },
+    {
+      "id": "compass_field",
+      "type": "advice",
+      "for": "compass.field",
+      "text": "Відкалібруйте компас подалі від металу і перевірте, чи не стоїть він біля силових дротів."
+    },
+    {
+      "id": "compass_motor",
+      "type": "advice",
+      "for": "compass.motor",
+      "text": "Струм мотора наводить поле на компас. Рознесіть дроти живлення і компас або налаштуйте COMPASS_MOTCT."
+    },
+    {
+      "id": "airspeed_below_stall",
+      "type": "advice",
+      "for": "airspeed.below_stall",
+      "text": "Перевірте трубку Піто і ARSPD_RATIO; у ручних режимах тримайте швидкість вище AIRSPEED_MIN."
+    },
+    {
+      "id": "airspeed_sensor_unused",
+      "type": "advice",
+      "for": "airspeed.sensor_unused",
+      "text": "Автопілот відкинув показання датчика: перевірте трубку і калібровку."
+    },
+    {
+      "id": "attitude_tracking",
+      "type": "advice",
+      "for": [
+        "attitude.lost_control",
+        "attitude.lagging"
+      ],
+      "text": "Перевірте, чи серви не впираються в межу, і налаштування RLL/PTCH_RATE (autotune)."
+    },
+    {
+      "id": "throttle_trim",
+      "type": "advice",
+      "for": "throttle.oscillation",
+      "if": [
+        {
+          "fact": "trim_gap",
+          "op": ">",
+          "value": 8
+        },
+        {
+          "param": "TRIM_THROTTLE",
+          "op": "!=",
+          "value": 0
+        }
+      ],
+      "order": 10,
+      "text": "TRIM_THROTTLE = {TRIM_THROTTLE}, а рівний політ потребує ≈{steady_thr:.0f}%: поставте TRIM_THROTTLE = {steady_thr:.0f}."
+    },
+    {
+      "id": "throttle_slewrate",
+      "type": "advice",
+      "for": "throttle.oscillation",
+      "if": [
+        {
+          "param": "THR_SLEWRATE",
+          "op": ">=",
+          "value": 80
+        }
+      ],
+      "order": 20,
+      "text": "THR_SLEWRATE = {THR_SLEWRATE}%/с дозволяє різкі ривки: спробуйте 40–50."
+    },
+    {
+      "id": "throttle_tecs_default",
+      "type": "advice",
+      "for": "throttle.oscillation",
+      "order": 90,
+      "fallback": true,
+      "text": "Збільште TECS_TIME_CONST на 1–2 і TECS_THR_DAMP до 0.7."
+    },
+    {
+      "id": "throttle_trim_mismatch",
+      "type": "advice",
+      "for": "throttle.trim",
+      "text": "Поставте TRIM_THROTTLE = {steady_thr:.0f}: TECS менше компенсуватиме і газ буде рівнішим."
+    },
+    {
+      "id": "throttle_at_max",
+      "type": "advice",
+      "for": "throttle.at_max",
+      "text": "Тяги бракує для заданої швидкості або набору: зменшіть TECS_CLMB_MAX або AIRSPEED_CRUISE."
+    },
+    {
+      "id": "servo_saturation",
+      "type": "advice",
+      "for": "servo.saturation",
+      "text": "Бракує ходу керма: збільште хід (SERVO_MIN/MAX або важелі) чи перевірте центрування."
+    },
+    {
+      "id": "servo_surface_saturation",
+      "type": "advice",
+      "for": "servo.surface_saturation",
+      "text": "Автопілоту бракує ходу керма: збільште хід або перевірте центрування й баланс."
+    },
+    {
+      "id": "logging_dropped",
+      "type": "advice",
+      "for": "logging.dropped",
+      "text": "Візьміть швидшу SD-карту або зменшіть LOG_BITMASK."
+    },
+    {
+      "id": "telemetry_gaps",
+      "type": "advice",
+      "for": "telemetry.gaps",
+      "text": "Перевірте антени телеметрії і їх розташування; у ці паузи GCS не бачила літак."
+    },
+    {
+      "id": "anomaly_before",
+      "type": "advice",
+      "for": "anomaly.before",
+      "text": "Сигнали стану систем у порядку, в якому вони почали відхилятись. Коли правила причину не назвали, перший з них — найімовірніший початок ланцюжка; коли назвали, це супутні зміни або збіг у часі."
+    },
+    {
+      "id": "anomaly_episode",
+      "type": "advice",
+      "for": "anomaly.episode",
+      "text": "Правила цього не пояснили. Подивіться ці сигнали на графіках: якщо це відома проблема, її можна описати в базі знань."
     }
   ]
 }
