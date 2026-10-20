@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "version": 1,
+  "entries": [
+    {
+      "id": "ekf_dcm_fallback",
+      "type": "message",
+      "rule": "flight_messages",
+      "pattern": "DCM active",
+      "when": "in_air",
+      "skip_near_disarm": 1.0,
+      "group": "each",
+      "severity": "warn",
+      "category": "EKF",
+      "title": "EKF відмовив, автопілот перейшов на DCM",
+      "detail": "«{text}» о {first}.",
+      "advice": "Подивіться інновації EKF (XKF4) і вібрації перед цим моментом.",
+      "window": [
+        -20,
+        10
+      ],
+      "plot": "EKF"
+    },
+    {
+      "id": "flight_keywords",
+      "type": "message",
+      "rule": "flight_messages",
+      "pattern": "(?i)\\b(glitch|crash|potential|thrust loss|lane|primary|bad|unhealthy|variance|stopped|error|fail(?!safe)\\w*)\\b",
+      "unless": "^(Ardu\\w+ V|ChibiOS|RCOut|IMU\\d|Param space|[A-Z0-9-]+ [0-9A-F]{8} )",
+      "when": "in_air",
+      "fallback": true,
+      "group": "same_text",
+      "severity": "warn",
+      "category": "Повідомлення",
+      "title": "{text}",
+      "detail": "Повідомлення автопілота в польоті о {first}.",
+      "detail_many": "Повідомлення автопілота в польоті ×{count}, перше о {first}, останнє о {last}.",
+      "window": [
+        -10,
+        10
+      ],
+      "plot": "Огляд"
+    },
+    {
+      "id": "sd_full",
+      "type": "message",
+      "rule": "sd_card",
+      "pattern": "(?i)ENOSPC|Failed to create log|No space left",
+      "when": "any",
+      "group": "all",
+      "severity": "warn",
+      "category": "Система",
+      "title": "SD-карта переповнена: BIN-лог не пишеться",
+      "detail": "«{text}» ×{count}, перше о {first}, останнє о {last}.",
+      "advice": "Звільніть або замініть SD-карту: без BIN-логу причину збою можна шукати лише за телеметрією."
+    },
+    {
+      "id": "prearm",
+      "type": "message",
+      "rule": "prearm",
+      "pattern": "^PreArm: (?P<item>.*)",
+      "when": "any",
+      "group": "all",
+      "severity": "info",
+      "category": "Підготовка",
+      "title": "Попередження PreArm: {unique}",
+      "detail": "{items}",
+      "advice": "Ці перевірки не дали б злетіти, поки їх не виправлено. Деякі вказують на проблеми налаштування (наприклад, поле компаса).",
+      "mark_time": false
+    }
+  ]
+}
