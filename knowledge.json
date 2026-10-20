@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "version": 4,
+  "version": 5,
   "entries": [
     {
       "id": "ekf_dcm_fallback",
@@ -766,6 +766,109 @@
       "fallback": true,
       "order": 95,
       "text": "Причину падіння на старті за правилами не знайдено: подивіться тангаж, швидкість і газ перших секунд на графіках і лог .bin з SD-карти."
+    },
+    {
+      "id": "failsafe_long_timeout",
+      "type": "advice",
+      "for": "failsafe_config.off",
+      "order": 10,
+      "if": [
+        {
+          "param": "FS_LONG_TIMEOUT",
+          "op": ">",
+          "value": 120
+        }
+      ],
+      "text": "Щоб літак повертався після втрати пульта, поставте FS_LONG_TIMEOUT 5–20 с: у ручних режимах FS_LONG_ACTN = 0 чи 1 означає RTL. Якщо failsafe вимкнено навмисно (політ далі за дальність пульта), потрібен інший захист: FS_GCS_ENABL."
+    },
+    {
+      "id": "failsafe_thr_off",
+      "type": "advice",
+      "for": "failsafe_config.off",
+      "order": 10,
+      "if": [
+        {
+          "param": "THR_FAILSAFE",
+          "op": "==",
+          "value": 0
+        }
+      ],
+      "text": "Увімкніть THR_FAILSAFE = 1 і перевірте THR_FS_VALUE: інакше автопілот не помічає втрати пульта взагалі."
+    },
+    {
+      "id": "failsafe_gcs_off",
+      "type": "advice",
+      "for": "failsafe_config.off",
+      "order": 20,
+      "if": [
+        {
+          "param": "FS_GCS_ENABL",
+          "op": "==",
+          "value": 0
+        },
+        {
+          "fact": "max_distance_km",
+          "op": ">=",
+          "value": 2
+        }
+      ],
+      "text": "Літак відлітав на {max_distance_km:.0f} км: якщо основний канал — телеметрія (Starlink, LTE), увімкніть FS_GCS_ENABL = 1, щоб її втрата теж запускала failsafe."
+    },
+    {
+      "id": "failsafe_ended_in_air",
+      "type": "advice",
+      "for": "failsafe_config.off",
+      "order": 30,
+      "if": [
+        {
+          "fact": "ended_in_air",
+          "op": "==",
+          "value": 1
+        }
+      ],
+      "text": "Що робив літак після обриву запису, покаже лог .bin з SD-карти."
+    },
+    {
+      "id": "link_lost_abrupt",
+      "type": "advice",
+      "for": "log_end.link_lost",
+      "order": 5,
+      "if": [
+        {
+          "fact": "abrupt",
+          "op": "==",
+          "value": 1
+        }
+      ],
+      "text": "Зв'язок до останньої секунди був стабільний ({rate_before:.0f} пакетів/с), тож обрив раптовий. Так буває при втраті живлення на борту (автопілота чи модему), ударі або відмові каналу, а не при віддаленні: перевірте живлення і роз'єми."
+    },
+    {
+      "id": "link_lost_fading",
+      "type": "advice",
+      "for": "log_end.link_lost",
+      "order": 5,
+      "if": [
+        {
+          "fact": "abrupt",
+          "op": "==",
+          "value": 0
+        }
+      ],
+      "text": "Перед обривом пакетів ставало менше ({rate_end:.0f} проти {rate_before:.0f}/с): схоже на межу дальності чи перешкоди для каналу телеметрії."
+    },
+    {
+      "id": "airspeed_stall_unset",
+      "type": "advice",
+      "for": "airspeed.below_stall",
+      "order": 5,
+      "if": [
+        {
+          "fact": "derived",
+          "op": "==",
+          "value": 1
+        }
+      ],
+      "text": "Задайте AIRSPEED_STALL — справжню швидкість звалювання літака: тоді і автопілот, і ця перевірка рахуватимуть від неї."
     }
   ]
 }
