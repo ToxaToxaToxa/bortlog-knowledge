@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "version": 3,
+  "version": 4,
   "entries": [
     {
       "id": "ekf_dcm_fallback",
@@ -631,6 +631,141 @@
       ],
       "order": 110,
       "text": "BATT_CRT_VOLT = 0: задайте й критичний поріг (≈3.3 В на банку) з дією BATT_FS_CRT_ACT."
+    },
+    {
+      "id": "takeoff_below_stall",
+      "type": "advice",
+      "for": [
+        "takeoff.crash",
+        "takeoff.sag"
+      ],
+      "if": [
+        {
+          "fact": "speed_margin",
+          "op": "<",
+          "value": 0
+        }
+      ],
+      "order": 10,
+      "text": "За 5 с після старту швидкість так і не дійшла до звалювання (найбільше {as_max:.0f} м/с при {stall:.0f}): катапульта чи кидок дає замало швидкості. Потрібен сильніший старт; перевірте й AIRSPEED_STALL."
+    },
+    {
+      "id": "takeoff_thr_slew",
+      "type": "advice",
+      "for": [
+        "takeoff.crash",
+        "takeoff.sag"
+      ],
+      "if": [
+        {
+          "fact": "thr_full_s",
+          "op": ">=",
+          "value": 1.0
+        },
+        {
+          "param": "TKOFF_THR_SLEW",
+          "op": ">",
+          "value": 0
+        },
+        {
+          "param": "TKOFF_THR_IDLE",
+          "op": ">=",
+          "value": 0
+        }
+      ],
+      "order": 20,
+      "text": "Повний газ лише через {thr_full_s:.1f} с після старту: газ ріс з холостих TKOFF_THR_IDLE = {TKOFF_THR_IDLE}% зі швидкістю TKOFF_THR_SLEW = {TKOFF_THR_SLEW}%/с. Для катапульти дайте повну тягу одразу: TKOFF_THR_SLEW = -1 (без обмеження)."
+    },
+    {
+      "id": "takeoff_thr_slewrate",
+      "type": "advice",
+      "for": [
+        "takeoff.crash",
+        "takeoff.sag"
+      ],
+      "if": [
+        {
+          "fact": "thr_full_s",
+          "op": ">=",
+          "value": 1.0
+        },
+        {
+          "param": "TKOFF_THR_SLEW",
+          "op": "==",
+          "value": 0
+        },
+        {
+          "param": "THR_SLEWRATE",
+          "op": ">",
+          "value": 0
+        }
+      ],
+      "order": 20,
+      "text": "Повний газ лише через {thr_full_s:.1f} с після старту: TKOFF_THR_SLEW = 0, тож на зльоті діє THR_SLEWRATE = {THR_SLEWRATE}%/с. Для катапульти дайте повну тягу одразу: TKOFF_THR_SLEW = -1 (без обмеження)."
+    },
+    {
+      "id": "takeoff_nose_drop",
+      "type": "advice",
+      "for": [
+        "takeoff.crash",
+        "takeoff.sag"
+      ],
+      "if": [
+        {
+          "fact": "nav_pitch_max",
+          "op": ">=",
+          "value": 10
+        },
+        {
+          "fact": "pitch_min",
+          "op": "<=",
+          "value": -5
+        }
+      ],
+      "order": 30,
+      "text": "Автопілот тягнув ніс угору (задано до {nav_pitch_max:.0f}°), а ніс падав до {pitch_min:.0f}°: літак не слухався руля висоти. Так буває при звалюванні або центруванні на ніс. Перевірте центрування, хід, кріплення і тяги рулів висоти (V-хвоста) і порівняйте з вдалими стартами цього літака."
+    },
+    {
+      "id": "takeoff_pitch_kick",
+      "type": "advice",
+      "for": [
+        "takeoff.crash",
+        "takeoff.sag"
+      ],
+      "if": [
+        {
+          "fact": "pitch_rate_up",
+          "op": ">=",
+          "value": 30
+        }
+      ],
+      "order": 40,
+      "text": "Одразу після старту ніс задирався зі швидкістю {pitch_rate_up:.0f}°/с до {pitch_max:.0f}°: перевірте кут рейки, центрування і як літак сходить з катапульти."
+    },
+    {
+      "id": "takeoff_tlog",
+      "type": "advice",
+      "for": [
+        "takeoff.crash",
+        "takeoff.sag"
+      ],
+      "if": [
+        {
+          "fact": "source",
+          "op": "==",
+          "value": "tlog"
+        }
+      ],
+      "order": 90,
+      "text": "Телеметрія пише кілька записів на секунду, тож піки між ними не видно: точну картину старту дасть лог .bin з SD-карти."
+    },
+    {
+      "id": "takeoff_unknown",
+      "type": "advice",
+      "for": "takeoff.crash",
+      "fallback": true,
+      "order": 95,
+      "text": "Причину падіння на старті за правилами не знайдено: подивіться тангаж, швидкість і газ перших секунд на графіках і лог .bin з SD-карти."
     }
   ]
 }
