@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "version": 2,
+  "version": 3,
   "entries": [
     {
       "id": "ekf_dcm_fallback",
@@ -324,7 +324,7 @@
       "for": "throttle.oscillation",
       "order": 90,
       "fallback": true,
-      "text": "Збільште TECS_TIME_CONST на 1–2 і TECS_THR_DAMP до 0.7."
+      "text": "Перевірте налаштування TECS: TECS_TIME_CONST (плавність виправлення висоти) і TECS_THR_DAMP (демпфування газу)."
     },
     {
       "id": "throttle_trim_mismatch",
@@ -373,6 +373,264 @@
       "type": "advice",
       "for": "anomaly.episode",
       "text": "Правила цього не пояснили. Подивіться ці сигнали на графіках: якщо це відома проблема, її можна описати в базі знань."
+    },
+    {
+      "id": "throttle_tecs_thr_damp",
+      "type": "advice",
+      "for": "throttle.oscillation",
+      "if": [
+        {
+          "param": "TECS_THR_DAMP",
+          "op": "<",
+          "value": 0.65
+        }
+      ],
+      "order": 30,
+      "text": "TECS_THR_DAMP = {TECS_THR_DAMP}: підніміть до 0.7, щоб газ сильніше гасив коливання швидкості й висоти."
+    },
+    {
+      "id": "throttle_tecs_time_const",
+      "type": "advice",
+      "for": "throttle.oscillation",
+      "if": [
+        {
+          "param": "TECS_TIME_CONST",
+          "op": "<=",
+          "value": 6
+        }
+      ],
+      "order": 40,
+      "fallback": true,
+      "replaces": [
+        "throttle_tecs_default"
+      ],
+      "text": "TECS_TIME_CONST = {TECS_TIME_CONST}: збільште на 1–2, тоді TECS виправлятиме висоту й швидкість м'якше."
+    },
+    {
+      "id": "throttle_height_demand",
+      "type": "advice",
+      "for": "throttle.oscillation",
+      "if": [
+        {
+          "fact": "hdem_change",
+          "op": ">",
+          "value": 5
+        }
+      ],
+      "order": 50,
+      "text": "Газ відпрацьовував зміну заданої висоти на {hdem_change:.0f} м. У CRUISE і FBWB стік тангажу змінює задану висоту: тримайте його в центрі або зменшіть FBWB_CLIMB_RATE."
+    },
+    {
+      "id": "attitude_roll_default_gains",
+      "type": "advice",
+      "for": [
+        "attitude.lost_control",
+        "attitude.lagging"
+      ],
+      "if": [
+        {
+          "fact": "axis",
+          "op": "==",
+          "value": "roll"
+        },
+        {
+          "param": "RLL_RATE_FF",
+          "op": ">",
+          "value": 0.344
+        },
+        {
+          "param": "RLL_RATE_FF",
+          "op": "<",
+          "value": 0.346
+        },
+        {
+          "param": "RLL_RATE_P",
+          "op": ">",
+          "value": 0.079
+        },
+        {
+          "param": "RLL_RATE_P",
+          "op": "<",
+          "value": 0.081
+        }
+      ],
+      "order": 10,
+      "replaces": [
+        "attitude_tracking"
+      ],
+      "text": "RLL_RATE_FF = {RLL_RATE_FF} і RLL_RATE_P = {RLL_RATE_P} — заводські значення: крен не налаштований під цей літак. Проведіть AUTOTUNE і перевірте, чи серви не впираються в межу."
+    },
+    {
+      "id": "attitude_pitch_default_gains",
+      "type": "advice",
+      "for": [
+        "attitude.lost_control",
+        "attitude.lagging"
+      ],
+      "if": [
+        {
+          "fact": "axis",
+          "op": "==",
+          "value": "pitch"
+        },
+        {
+          "param": "PTCH_RATE_FF",
+          "op": ">",
+          "value": 0.344
+        },
+        {
+          "param": "PTCH_RATE_FF",
+          "op": "<",
+          "value": 0.346
+        },
+        {
+          "param": "PTCH_RATE_P",
+          "op": ">",
+          "value": 0.039
+        },
+        {
+          "param": "PTCH_RATE_P",
+          "op": "<",
+          "value": 0.041
+        }
+      ],
+      "order": 10,
+      "replaces": [
+        "attitude_tracking"
+      ],
+      "text": "PTCH_RATE_FF = {PTCH_RATE_FF} і PTCH_RATE_P = {PTCH_RATE_P} — заводські значення: тангаж не налаштований під цей літак. Проведіть AUTOTUNE і перевірте, чи серви не впираються в межу."
+    },
+    {
+      "id": "logging_imu_raw",
+      "type": "advice",
+      "for": "logging.dropped",
+      "if": [
+        {
+          "param": "LOG_BITMASK",
+          "op": ">=",
+          "value": 524288
+        },
+        {
+          "param": "LOG_BITMASK",
+          "op": "<",
+          "value": 1048576
+        }
+      ],
+      "order": 110,
+      "text": "LOG_BITMASK = {LOG_BITMASK} пише сирі дані IMU (біт 19, IMU_RAW) — найбільший потік у лозі. Якщо не налаштовуєте фільтри, приберіть цей біт (відніміть 524288)."
+    },
+    {
+      "id": "ekf_innovation_sh",
+      "type": "advice",
+      "for": "ekf.innovation",
+      "if": [
+        {
+          "fact": "test",
+          "op": "==",
+          "value": "SH"
+        }
+      ],
+      "order": 110,
+      "text": "Висота: закрийте барометр поролоном від потоку повітря і світла, перевірте, чи не дме в корпус на швидкості."
+    },
+    {
+      "id": "ekf_innovation_sm",
+      "type": "advice",
+      "for": "ekf.innovation",
+      "if": [
+        {
+          "fact": "test",
+          "op": "==",
+          "value": "SM"
+        }
+      ],
+      "order": 110,
+      "text": "Компас: перевірте калібрування, відстань до силових дротів і COMPASS_MOTCT."
+    },
+    {
+      "id": "ekf_innovation_sv",
+      "type": "advice",
+      "for": "ekf.innovation",
+      "if": [
+        {
+          "fact": "test",
+          "op": "==",
+          "value": "SV"
+        }
+      ],
+      "order": 110,
+      "text": "Швидкість: подивіться GPS у цей час — стрибки, глушіння, погана антена."
+    },
+    {
+      "id": "ekf_innovation_sp",
+      "type": "advice",
+      "for": "ekf.innovation",
+      "if": [
+        {
+          "fact": "test",
+          "op": "==",
+          "value": "SP"
+        }
+      ],
+      "order": 110,
+      "text": "Позиція: подивіться GPS у цей час — стрибки, глушіння, погана антена."
+    },
+    {
+      "id": "airspeed_ratio_default",
+      "type": "advice",
+      "for": "airspeed.below_stall",
+      "if": [
+        {
+          "param": "ARSPD_RATIO",
+          "op": ">",
+          "value": 1.98
+        },
+        {
+          "param": "ARSPD_RATIO",
+          "op": "<",
+          "value": 2.01
+        }
+      ],
+      "order": 110,
+      "text": "ARSPD_RATIO = {ARSPD_RATIO} — майже заводське значення: датчик швидкості, схоже, не калібрували. Відкалібруйте ARSPD_RATIO польотом, інакше і швидкість, і поріг звалювання можуть бути хибними."
+    },
+    {
+      "id": "failsafe_not_cleared_link",
+      "type": "advice",
+      "for": "failsafe.not_cleared",
+      "order": 10,
+      "text": "Зв'язок з пультом не відновився до кінця польоту: перевірте приймач, його антени і живлення."
+    },
+    {
+      "id": "failsafe_long_timeout_off",
+      "type": "advice",
+      "for": [
+        "failsafe.long",
+        "failsafe.not_cleared"
+      ],
+      "if": [
+        {
+          "param": "FS_LONG_TIMEOUT",
+          "op": ">",
+          "value": 300
+        }
+      ],
+      "order": 110,
+      "text": "FS_LONG_TIMEOUT = {FS_LONG_TIMEOUT:.0f} с: довгий failsafe не спрацює ніколи, тож без зв'язку літак сам не повернеться. Якщо це не навмисно, поставте 5–20 с і FS_LONG_ACTN = 1 (RTL)."
+    },
+    {
+      "id": "battery_crt_volt_off",
+      "type": "advice",
+      "for": "battery.fs_off",
+      "if": [
+        {
+          "param": "BATT_CRT_VOLT",
+          "op": "==",
+          "value": 0
+        }
+      ],
+      "order": 110,
+      "text": "BATT_CRT_VOLT = 0: задайте й критичний поріг (≈3.3 В на банку) з дією BATT_FS_CRT_ACT."
     }
   ]
 }
