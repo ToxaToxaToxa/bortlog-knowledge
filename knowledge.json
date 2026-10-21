@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "version": 5,
+  "version": 6,
   "entries": [
     {
       "id": "ekf_dcm_fallback",
@@ -9,7 +9,7 @@
       "pattern": "DCM active",
       "when": "in_air",
       "skip_near_disarm": 1.0,
-      "group": "each",
+      "group": "same_text",
       "severity": "warn",
       "category": "EKF",
       "title": "EKF відмовив, автопілот перейшов на DCM",
@@ -19,7 +19,8 @@
         -20,
         10
       ],
-      "plot": "EKF"
+      "plot": "EKF",
+      "detail_many": "«{text}» ×{count}, перше о {first}, останнє о {last}."
     },
     {
       "id": "flight_keywords",
